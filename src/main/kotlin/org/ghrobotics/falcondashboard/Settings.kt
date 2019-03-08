@@ -19,7 +19,7 @@ import java.io.FileWriter
 
 
 object Settings {
-    val name = SimpleStringProperty("Baseline")
+    val name = SimpleStringProperty("Auton Name")
     val reversed = SimpleBooleanProperty(false)
     val optimize = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
@@ -28,7 +28,7 @@ object Settings {
     val maxVelocity = SimpleDoubleProperty(10.0)
     val maxAcceleration = SimpleDoubleProperty(4.0)
     val maxCentripetalAcceleration = SimpleDoubleProperty(4.0)
-    val ip = SimpleStringProperty("127.0.1.1")
+    val ip = SimpleStringProperty("10.27.14.2")
 
     private val gson = GsonBuilder().registerTypeAdapter<Settings> {
         write {

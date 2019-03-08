@@ -30,52 +30,70 @@ class CodeFragment : Fragment() {
 
             text = buildString {
 
-                append(
-                    "import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d\n" +
-                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator\n" +
-                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.constraints.CentripetalAccelerationConstraint\n" +
-                        "import org.ghrobotics.lib.mathematics.units.degree\n" +
-                        "import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration\n" +
-                        "import org.ghrobotics.lib.mathematics.units.derivedunits.velocity\n" +
-                        "import org.ghrobotics.lib.mathematics.units.feet\n\n\n\n"
-                )
-
-                val name = Settings.name.value.decapitalize()
-                    .replace("\\s+".toRegex(), "")
+//                append(
+//                    "import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d\n" +
+//                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator\n" +
+//                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.constraints.CentripetalAccelerationConstraint\n" +
+//                        "import org.ghrobotics.lib.mathematics.units.degree\n" +
+//                        "import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration\n" +
+//                        "import org.ghrobotics.lib.mathematics.units.derivedunits.velocity\n" +
+//                        "import org.ghrobotics.lib.mathematics.units.feet\n\n\n\n"
+//                )
 
                 val dm = DecimalFormat("##.###")
 
-                append("val $name = DefaultTrajectoryGenerator.generateTrajectory(\n")
-                append("    wayPoints = listOf(\n")
+                val firstX = GeneratorView.waypoints.first().translation.x.feet
+                val firstY = GeneratorView.waypoints.first().translation.y.feet
+
+                var prevX = 0.0
+                var prevY = 0.0
+
+                var initialAngle = 90
+                var prevAngle = 0.0
                 GeneratorView.waypoints.forEach {
+
+
                     append(
-                        "        Pose2d(${dm.format(it.translation.x.feet)}.feet, " +
-                            "${dm.format(it.translation.y.feet)}.feet, " +
-                            "${dm.format(it.rotation.degree)}.degree)"
+                        if(it != GeneratorView.waypoints.first()) {
+                            "queueTask(add_forwards_spline -s " + dm.format(prevY) + "," + dm.format(prevX) + "," + dm.format(prevAngle) + " 2," +
+                                    dm.format(firstY - it.translation.y.feet) + "," + dm.format(it.translation.x.feet - firstX) + "," +
+                                    dm.format(initialAngle - it.rotation.degree) + "2,5,5,0,0"
+                        }else {
+                            ""
+                        }
+//                        "Pose2d(${dm.format( it.translation.x.feet - firstX)}.feet, " +
+//                            "${dm.format(firstY - it.translation.y.feet)}.feet, " +
+//                            "${dm.format(it.rotation.degree)}.degree)"
                     )
-                    if (it != GeneratorView.waypoints.last()) append(",")
-                    append("\n")
+                    if(it != GeneratorView.waypoints.first()) {
+                        append(";")
+                        append("\n")
+                    }
+
+                    prevX = (it.translation.x.feet - firstX)
+                    prevY = (firstY - it.translation.y.feet)
+                    prevAngle = initialAngle - it.rotation.degree
                 }
-                append("    ),\n")
-                append(
-                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration),\n" +
-                        "    startVelocity = 0.0.feet.velocity,\n" +
-                        "    endVelocity = 0.0.feet.velocity,\n" +
-                        "    maxVelocity = ${Settings.maxVelocity.value}.feet.velocity,\n" +
-                        "    maxAcceleration = ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
-                        "    reversed = ${Settings.reversed.value}\n)"
-                )
+//                append("    ),\n")
+//                append(
+//                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration),\n" +
+//                        "    startVelocity = 0.0.feet.velocity,\n" +
+//                        "    endVelocity = 0.0.feet.velocity,\n" +
+//                        "    maxVelocity = ${Settings.maxVelocity.value}.feet.velocity,\n" +
+//                        "    maxAcceleration = ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
+//                        "    reversed = ${Settings.reversed.value}\n)"
+//                )
             }
         }
         vbox {
             style {
                 padding = box(0.5.em, 0.em, 0.em, 0.em)
             }
-            add(text(" This code is generated to be used with FalconLibrary"))
-            add(hyperlink("https://github.com/5190GreenHopeRobotics/FalconLibrary") {
+            add(text(" This code is generated to be added in an AutonTask with BBQLibs"))
+            add(hyperlink("https://github.com/FRC2714/2019Competition") {
                 setOnAction {
                     Desktop.getDesktop()
-                        .browse(URI("https://github.com/5190GreenHopeRobotics/FalconLibrary"))
+                        .browse(URI("https://github.com/FRC2714/2019Competition"))
                 }
             })
         }
