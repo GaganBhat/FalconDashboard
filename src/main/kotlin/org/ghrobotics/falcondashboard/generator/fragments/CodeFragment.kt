@@ -55,9 +55,9 @@ class CodeFragment : Fragment() {
 
                     append(
                         if(it != GeneratorView.waypoints.first()) {
-                            "queueTask(add_forwards_spline -s " + dm.format(prevY) + "," + dm.format(prevX) + "," + dm.format(prevAngle) + " 2," +
+                            "queueTask(\"add_forwards_spline -s " + dm.format(prevY) + "," + dm.format(prevX) + "," + dm.format(prevAngle) + " 2," +
                                     dm.format(firstY - it.translation.y.feet) + "," + dm.format(it.translation.x.feet - firstX) + "," +
-                                    dm.format(initialAngle - it.rotation.degree) + "2,5,5,0,0"
+                                    ((initialAngle - it.rotation.degree)) + "2,5,5,0,0\")"
                         }else {
                             ""
                         }
